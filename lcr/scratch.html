@@ -1,0 +1,14 @@
+<!--\n   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n\n    Copyright (c) 2007 Sun Microsystems Inc. All Rights Reserved\n\n    
+The contents of this file are subject to the terms\n    of the Common Development and Distribution License\n    (the License). You may not use this file except in\n    compliance with the License.\n\n   
+ You can obtain a copy of the License at\n    https://opensso.dev.java.net/public/CDDLv1.0.html or\n    opensso/legal/CDDLv1.0.txt\n    See the License for the specific language governing\n   
+  permission and limitations under the License.\n\n    When distributing Covered Code, include this CDDL\n    Header Notice in each file and include the License file\n    at opensso/legal/CDDLv1.0.txt.\n   
+   If applicable, add the following below the CDDL Header,\n    with the fields enclosed by brackets [] replaced by\n    your own identifying information:\n    "Portions Copyrighted [year] [name of copyright owner]"\n\n 
+      $Id: index.html,v 1.2 2008/06/25 05:48:51 qcheng Exp $\n\n-->\n\n\n<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">\n<html>\n<head>\n<title>
+          Please Wait While Redirecting to Login page</title>\n\n<script language="JavaScript"> 
+          <!--\n\nfunction redirectToAuth() {\n    
+            var params = getQueryParameters();\n 
+            var url = \'UI/Login\';\n\n    if (params != \'\') {\n        url += params;\n    }\n    window.location.replace(url);\n}\n\nfunction getQueryParameters() {\n   
+                 var loc = \'\' + location;\n    var idx = loc.indexOf(\'?\');\n    if (idx != -1) {\n      
+  return loc.substring(idx);\n    } else {\n        return \'\';\n    }
+  \n}
+  \n//-->\n</script>\n</head>\n\n<body bgcolor="#FFFFFF" onLoad="redirectToAuth();">\n</body>\n</html>'
