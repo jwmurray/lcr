@@ -9,6 +9,6 @@ move_ins = lcr.members_moved_in(months)
 
 for member in move_ins:
     if member['householdPosition'] == 'Head of Household':
-        print("{}: {}, on {}".format(member['name'], member['address'], member['moveDate']))
+        print("{}: {}, {}, in {}".format(member['name'], member['address'], member['age'], member['moveDate']))
     else:
-        print("\t{}: {}, on {}".format(member['name'], member['address'], member['moveDate']))
+        print("{}: {}, {} in {}".format(member['name'], member['address'], member['age'], member['moveDate']))

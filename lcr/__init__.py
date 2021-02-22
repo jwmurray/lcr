@@ -47,7 +47,7 @@ class ChurchLogin():
         login_button = self.driver.find_element_by_id('okta-signin-submit')
         login_button.click() # Send mouse click
  
-        password_element = self.driver.find_element_by_id('input8')
+        password_element = self.driver.find_element_by_class_name('password-with-toggle')
         password_element.send_keys(self.password) # Give password as input too
         time.sleep(2)
         verify_button = self.driver.find_element_by_class_name("button.button-primary")
