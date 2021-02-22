@@ -62,11 +62,15 @@ class ChurchLogin():
     
     def get(self, url):
         # self.driver.implicitly_wait(100)
-        response = self.driver.get(url)
+        self.driver.get(url)
         time.sleep(4)
-        response = self.driver.find_element_by_xpath("//body").get_attribute('outerHTML')
+        response_str = self.driver.find_element_by_xpath("//body").get_attribute('outerHTML')
 
-        return response
+        html_str = re.compile("\'?<body.*>(\[{.*}\]).*<\/body>\'?", re.DOTALL)
+        matches = html_str.search(response_str)
+
+        json_str = matches.group(1)
+        return json_str
 
 class InvalidCredentialsError(Exception):
     pass
@@ -91,8 +95,7 @@ class API():
 
         self.ch_login = ChurchLogin(username = user, password = password, browser = 'Chrome')
         self.ch_login.login()
-        url = "https://lcr.churchofjesuschrist.org/services/report/members-moved-in/unit/259950/5?lang=eng"
-        self.ch_login.get(url)
+
         time.sleep(2)
 
         # authState = re.search('"authState":"([A-Za-z0-9]+)"', text).group(1)
@@ -117,13 +120,16 @@ class API():
             request['cookies'] = {'clerk-resources-beta-terms': '4.1',
                                   'clerk-resources-beta-eula': '4.2'}
 
+        url = request['url']
         # response = self.session.get(**request)
         response = self.ch_login.get(request['url'])
         # response = self.session.get(**request)
         # response = self.driver.get(**request)
+        # url = "https://lcr.churchofjesuschrist.org/services/report/members-moved-in/unit/259950/5?lang=eng"
+        # response =self.ch_login.get(url)
+        # time.sleep(2)
 
-        time.sleep(2)
-        response.raise_for_status() # break on any non 200 status
+        # response.raise_for_status() # break on any non 200 status
         # io.TextIOWrapper(response, encoding=response.headers.get_content_charset('utf-8')) as file:
         # result = json.load(file)
         time.sleep(2)
@@ -147,9 +153,11 @@ class API():
                                                                                                   months),
                    'params': {'lang': 'eng'}}
 
-        result = self.ch_login
+        # result = self.ch_login
         result = self._make_request(request)
-        return result.json()
+        pyList = json.loads(result)
+        pyDict = pyList[0]
+        return pyList
 
 
     def members_moved_out(self, months):
