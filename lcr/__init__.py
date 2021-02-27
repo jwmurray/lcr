@@ -12,6 +12,10 @@ import time
 import io
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 _LOGGER = logging.getLogger(__name__)
 HOST = "churchofjesuschrist.org"
@@ -22,6 +26,21 @@ LCR_DOMAIN = "lcr.churchofjesuschrist.org"
 if _LOGGER.getEffectiveLevel() <= logging.DEBUG:
     import http.client as http_client
     http_client.HTTPConnection.debuglevel = 1
+
+class wait_for_page_load(object):
+
+    def __init__(self, browser):
+        self.browser = browser
+
+    def __enter__(self):
+        self.old_page = self.browser.find_element_by_tag_name('html')
+
+    def page_has_loaded(self):
+        new_page = self.browser.find_element_by_tag_name('html')
+        return new_page.id != self.old_page.id
+
+    def __exit__(self, *_):
+        wait_for_page_load(self.page_has_loaded)
 
 class ChurchLogin():
     def __init__(self, username, password, browser='Chrome'):
@@ -51,19 +70,37 @@ class ChurchLogin():
         password_element.send_keys(self.password) # Give password as input too
         time.sleep(2)
         verify_button = self.driver.find_element_by_class_name("button.button-primary")
+        self.driver.find_element_by_class_name("button.button-primary").click()
+        # self.driver.find_element_by_link_text('Verify').click()
 
-        self.driver.implicitly_wait(100)
-        verify_button.click()
+        # self.driver.implicitly_wait(100)
+        # with wait_for_page_load(self.driver):
+        #     self.driver.find_element_by_class_name("button.button-primary").click()
+        
+
+        # timeout = 3
+        # try:
+        #     element_present = EC.text_to_be_present_in_element((By.CLASS_NAME, "userName"), "John William Murray")
+        #     WebDriverWait(self.driver, timeout).until(element_present)
+        #     # w = WebDriverWait(driver, 8)
+        #     # w.until(expected_conditions.presence_of_element_located((By.ID,"topItem.accountLink")))
+        #     print("Page load happened")
+        # except TimeoutException:
+        #     print("Timeout happened no page load")
+
+        time.sleep(3)
+            # self.driver.find_element_by_link_text('Verify').click()
+        # verify_button.click()
         # url = "https://lcr.churchofjesuschrist.org/services/report/members-moved-in/unit/259950/5?lang=eng"
         # response = self.driver.get(url)
         # footerLink = self.driver.find_element_by_class_name("footerLink")
         # Need better way to wait for page to load then the sleep in case internet is slower
-        time.sleep(4)
+        # time.sleep(6)
     
     def get(self, url):
         # self.driver.implicitly_wait(100)
         self.driver.get(url)
-        time.sleep(4)
+        time.sleep(5)
         response_str = self.driver.find_element_by_xpath("//body").get_attribute('outerHTML')
 
         html_str = re.compile("\'?<body.*>(\[{.*}\]).*<\/body>\'?", re.DOTALL)
