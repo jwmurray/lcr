@@ -97,10 +97,17 @@ class ChurchLogin():
         # Need better way to wait for page to load then the sleep in case internet is slower
         # time.sleep(6)
     
+    def get_xpath(self, url, xpath, attribute=None):
+        # self.driver.implicitly_wait(100)
+        self.driver.get(url)
+        time.sleep(7)
+        response_str = self.driver.find_element_by_xpath(xpath) # .get_attribute(attribute)
+        return response_str
+
     def get(self, url):
         # self.driver.implicitly_wait(100)
         self.driver.get(url)
-        time.sleep(5)
+        time.sleep(7)
         response_str = self.driver.find_element_by_xpath("//body").get_attribute('outerHTML')
 
         html_str = re.compile("\'?<body.*>(\[{.*}\]).*<\/body>\'?", re.DOTALL)
@@ -157,18 +164,18 @@ class API():
             request['cookies'] = {'clerk-resources-beta-terms': '4.1',
                                   'clerk-resources-beta-eula': '4.2'}
 
-        url = request['url']
-        # response = self.session.get(**request)
         response = self.ch_login.get(request['url'])
-        # response = self.session.get(**request)
-        # response = self.driver.get(**request)
-        # url = "https://lcr.churchofjesuschrist.org/services/report/members-moved-in/unit/259950/5?lang=eng"
-        # response =self.ch_login.get(url)
-        # time.sleep(2)
 
-        # response.raise_for_status() # break on any non 200 status
-        # io.TextIOWrapper(response, encoding=response.headers.get_content_charset('utf-8')) as file:
-        # result = json.load(file)
+        time.sleep(2)
+        return response
+    
+    def _make_request_xpath(self, request, xpath, element):
+        if self.beta:
+            request['cookies'] = {'clerk-resources-beta-terms': '4.1',
+                                  'clerk-resources-beta-eula': '4.2'}
+
+        response = self.ch_login.get_xpath(request['url'], xpath, element)
+
         time.sleep(2)
         return response
 
@@ -189,8 +196,6 @@ class API():
                                                                                                   self.unit_number,
                                                                                                   months),
                    'params': {'lang': 'eng'}}
-
-        # result = self.ch_login
         result = self._make_request(request)
         pyList = json.loads(result)
         pyDict = pyList[0]
@@ -203,19 +208,21 @@ class API():
                                                                                                    self.unit_number,
                                                                                                    months),
                    'params': {'lang': 'eng'}}
-
         result = self._make_request(request)
-        return result.json()
-
+        pyList = json.loads(result)
+        pyDict = pyList[0]
+        return pyList
 
     def member_list(self):
         _LOGGER.info("Getting member list")
-        request = {'url': 'https://{}/services/report/member-list'.format(LCR_DOMAIN),
+        request = {'url': 'https://{}/records/member-list?lang=eng'.format(LCR_DOMAIN),
                    'params': {'lang': 'eng',
                               'unitNumber': self.unit_number}}
+        result = self._make_request_xpath(request, ".//*[@id='mainContent']/div[1]/table/thead/tr/th[2]/a", None)
 
-        result = self._make_request(request)
-        return result.json()
+        pyList = json.loads(result)
+        pyDict = pyList[0]
+        return pyList
 
 
     def individual_photo(self, member_id):
@@ -240,6 +247,18 @@ class API():
         result = self._make_request(request)
         return result.json()
 
+    def action_interview_list(self):
+        
+        _LOGGER.info("Getting members moved in")
+        request = {'url': 'https://{}/services/report/action-interview-list/unit/{}'.format(LCR_DOMAIN,
+                                                                                                  self.unit_number),
+                   'params': {'lang': 'eng'}}
+
+        # result = self.ch_login
+        result = self._make_request(request)
+        pyList = json.loads(result)
+        pyDict = pyList[0]
+        return pyList
 
     def members_alt(self):
         _LOGGER.info("Getting member list")

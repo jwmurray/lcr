@@ -22,10 +22,45 @@ lcr = LCR(username, password, unitNumber)
 
 # time.sleep(1)
 months = 5
-move_ins = lcr.members_moved_in(months)
+# move_ins = lcr.members_moved_in(months)
+# for member in move_ins:
+#     if member['householdPosition'] == 'Head of Household':
+#         print("{}: {}, {}, in {}".format(member['name'], member['address'], member['age'], member['moveDate']))
+#     else:
+#         print("{}: {}, {} in {}".format(member['name'], member['address'], member['age'], member['moveDate']))
+# 
+if False:
+    members_json = lcr.member_list()
+    member_list = []
+    for member in member_list:
+        member_list.append(member)
+    member_list.sort(key=lambda s: s['birthDateSort'])
+
+    for member in member_list:
+        print("{} ({}, {}): Action: {}".format(member['name'], member['age'], member['birthDateFormatted'], member['ailActionType']))
+
+
+
 # time.sleep(8)
-for member in move_ins:
-    if member['householdPosition'] == 'Head of Household':
-        print("{}: {}, {}, in {}".format(member['name'], member['address'], member['age'], member['moveDate']))
-    else:
-        print("{}: {}, {} in {}".format(member['name'], member['address'], member['age'], member['moveDate']))
+
+else:
+    interviews = lcr.action_interview_list()
+    interview_list = []
+    semi_annual_interview_list = []
+    for member in interviews:
+        if "ANNUAL_INTERVIEW" == member['ailActionType']:
+            interview_list.append(member)
+        if "SEMIANNUAL_INTERVIEW" == member['ailActionType']:
+            semi_annual_interview_list.append(member)
+    interview_list.sort(key=lambda s: s['birthDateSort'])
+    semi_annual_interview_list.sort(key=lambda s: s['birthDateSort'])
+
+    for member in interview_list:
+        print("{} ({}, {}): Action: {}".format(member['name'], member['age'], member['birthDateFormatted'], member['ailActionType']))
+
+
+    for member in semi_annual_interview_list:
+        print("{} ({}, {}): Action: {}".format(member['name'], member['age'], member['birthDateFormatted'], member['ailActionType']))
+
+# time.sleep(8)
+
